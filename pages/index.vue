@@ -3,10 +3,10 @@
     <section class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 transition-all duration-300">
 
       <div class="text-center mb-6">
-        <h1 class="text-4xl font-extrabold text-pastel-purple mb-2">
+        <h1 class="text-4xl font-extrabold text-pastel-green mb-2">
           🎓 Formations Supérieures
         </h1>
-        <p class="text-pastel-blue">Trouvez la formation qui vous correspond</p>
+        <p class="text-pastel-green">Trouvez la formation qui vous correspond</p>
       </div>
 
       <form @submit.prevent="searchFormations" class="flex gap-3 mb-6">
@@ -25,20 +25,16 @@
       </form>
 
       <div v-if="loading" class="flex justify-center py-4">
-        
-
-   <ClientOnly>
-        <lottie-player
+        <ClientOnly>
+          <lottie-player
             src="https://assets9.lottiefiles.com/packages/lf20_puciaact.json"
             background="transparent"
             speed="1"
             loop
             autoplay
             style="width: 150px; height: 150px"
-        />
-    </ClientOnly>
-
-
+          />
+        </ClientOnly>
       </div>
 
       <div v-else>
@@ -50,9 +46,27 @@
             <li
               v-for="formation in results"
               :key="formation.id"
-              class="hover:text-pastel-pink cursor-pointer transition"
+              class="border-b border-gray-200 py-3 hover:bg-gray-50 transition"
             >
-              {{ formation.nom }}
+              <NuxtLink
+                :to="`/formation/${formation.id}`"
+                class="flex items-center justify-between p-2 hover:text-pastel-purple"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-pastel-purple rounded-full flex items-center justify-center">
+                    <!-- <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg> -->
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">{{ formation.titre }}</h3>
+                    <p class="text-sm text-gray-600">{{ formation.etablissement }}</p>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </NuxtLink>
             </li>
           </ul>
         </div>
@@ -66,27 +80,21 @@
 
 <script setup>
 import { ref } from 'vue'
-// import '@lottiefiles/lottie-player'
+import { formationsDB } from '../data/formations.js'
 
+// Convertir l'objet en tableau
+const formationsArray = Object.values(formationsDB)
 const query = ref('')
 const results = ref([])
 const loading = ref(false)
-
-const formationsDB = [
-  { id: 1, nom: 'Licence Informatique' },
-  { id: 2, nom: 'Master Data Science' },
-  { id: 3, nom: 'DUT Réseaux et Télécoms' },
-  { id: 4, nom: 'Licence Mathématiques Appliquées' },
-  { id: 5, nom: 'Bachelor Marketing Digital' },
-]
 
 const searchFormations = () => {
   loading.value = true
   results.value = []
 
   setTimeout(() => {
-    results.value = formationsDB.filter(f =>
-      f.nom.toLowerCase().includes(query.value.toLowerCase())
+    results.value = formationsArray.filter(f =>
+      f.titre.toLowerCase().includes(query.value.toLowerCase())
     )
     loading.value = false
   }, 800)
